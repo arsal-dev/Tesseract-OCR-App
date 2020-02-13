@@ -1,0 +1,100 @@
+<!DOCTYPE html>
+<html>
+<head>
+	<title>OCR</title>
+	<link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.4.1/css/bootstrap.min.css" integrity="sha384-Vkoo8x4CGsO3+Hhxv8T/Q5PaXtkKtu6ug5TOeNV6gBiFeWPGFN9MuhOf23Q9Ifjh" crossorigin="anonymous">
+	<script src="https://code.jquery.com/jquery-3.4.1.slim.min.js" integrity="sha384-J6qa4849blE2+poT4WnyKhv5vZF5SrPo0iEjwBvKU7imGFAV0wwj1yYfoRSJoZ+n" crossorigin="anonymous"></script>
+	<script src="https://cdn.jsdelivr.net/npm/popper.js@1.16.0/dist/umd/popper.min.js" integrity="sha384-Q6E9RHvbIyZFJoft+2mJbHaEWldlvI9IOYy5n3zV9zzTtmI3UksdQRVvoxMfooAo" crossorigin="anonymous"></script>
+	<script src="https://stackpath.bootstrapcdn.com/bootstrap/4.4.1/js/bootstrap.min.js" integrity="sha384-wfSDF2E50Y2D1uUdj0O3uMBJnjuUD4Ih7YwaYd1iqfktj0Uod8GCExl3Og8ifwB6" crossorigin="anonymous"></script>
+	<style type="text/css">
+		.image-preview
+		{
+			width: 300px;
+			min-height: 100px;
+			border: 2px solid #dddddd;
+			margin-top: 15px;
+			
+			/*Default Text*/
+			display: flex;
+			align-items: center;
+			justify-content: center;
+			font-weight: bold;
+			color: #cccccc;
+		}
+		.image-preview__image
+		{
+			display: none;
+			width: 100%;
+		}
+	</style>
+</head>
+<body>
+
+	<div class="container">
+		<div class="row">
+			<div class="col-sm-12" align="center">
+				<!-- <img src="deficault.jpg" width="500"> -->
+				<p>Image to Text Converter</p>
+				<hr>
+					<input type="file" name="inpFile" id="inpFile">
+					<div class="image-preview" id="imagePreview">
+						<img src="" alt="Image Preview" class="image-preview__image">
+						<span class="image-preview__default-text">Image Preview</span>
+					</div>
+
+				<hr>
+				<h6>Result</h6>
+				<span id="progress"><img src="loading.gif" width="300"></span>
+
+				<div id="result"></div>
+			</div>
+		</div>
+	</div> 
+	<!-- End Container -->
+	<script src="https://code.jquery.com/jquery-3.4.1.slim.min.js"></script>
+	<script src='https://unpkg.com/tesseract.js@v2.0.2/dist/tesseract.min.js'></script>
+<script type="text/javascript">
+
+	const inpFile = document.getElementById('inpFile');
+	const previewContainer = document.getElementById('imagePreview');
+	const previewImage = previewContainer.querySelector('.image-preview__image');
+	const previewDefaultText = previewContainer.querySelector('.image-preview__default-text');
+$("#progress").hide();
+	inpFile.addEventListener("change", function(){
+		const file = this.files[0];
+
+		if (file) 
+		{
+			$("#progress").show();
+			const reader = new FileReader();
+			previewDefaultText.style.display = 'none';
+			previewImage.style.display = 'block';
+
+			reader.addEventListener("load", function(){
+			previewImage.setAttribute("src", this.result);
+			});
+			reader.readAsDataURL(file);
+		}
+		else
+		{
+			previewDefaultText.style.display = null;
+			previewImage.style.display = null;
+			previewImage.setAttribute("src","");
+		}
+	
+	Tesseract.recognize(
+	  file,
+	  'eng',
+	  { logger: m => console.log(m) }
+	).then(({ data: { text } }) => {
+	  // console.log(text);
+	  $("#progress").hide();
+	  document.getElementById("result").innerHTML = text;
+	})
+
+
+});
+</script>
+
+</body>
+</html>
